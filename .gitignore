@@ -168,3 +168,6 @@ cython_debug/
 
 */.DS_Store
 .vscode
+
+docker/data/mysql8/data/
+docker/data/redis/data/
