@@ -126,7 +126,8 @@ class DOUYINClient(AbstractApiClient):
             offset: int = 0,
             search_channel: SearchChannelType = SearchChannelType.GENERAL,
             sort_type: SearchSortType = SearchSortType.GENERAL,
-            publish_time: PublishTimeType = PublishTimeType.UNLIMITED
+            publish_time: PublishTimeType = PublishTimeType.UNLIMITED,
+            search_id: str = ""
     ):
         """
         DouYin Web Search API
@@ -135,12 +136,13 @@ class DOUYINClient(AbstractApiClient):
         :param search_channel:
         :param sort_type:
         :param publish_time: ·
+        :param search_id: ·
         :return:
         """
         query_params = {
             'search_channel': search_channel.value,
             'enable_history': '1',
-            'keyword': urllib.parse.quote(keyword),
+            'keyword': keyword,
             'search_source': 'tab_search',
             'query_correct_type': '1',
             'is_filter_search': '0',
@@ -149,12 +151,13 @@ class DOUYINClient(AbstractApiClient):
             'count': '15',
             'need_filter_settings': '1',
             'list_type': 'multi',
+            'search_id': search_id,
         }
         if sort_type.value != SearchSortType.GENERAL.value or publish_time.value != PublishTimeType.UNLIMITED.value:
-            query_params["filter_selected"] = urllib.parse.quote(json.dumps({
+            query_params["filter_selected"] = json.dumps({
                 "sort_type": str(sort_type.value),
                 "publish_time": str(publish_time.value)
-            }))
+            })
             query_params["is_filter_search"] = 1
             query_params["search_source"] = "tab_search"
         referer_url = f"https://www.douyin.com/search/{keyword}?aid=f594bbd9-a0e2-4651-9319-ebe3cb6298c1&type=general"
