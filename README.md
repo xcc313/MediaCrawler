@@ -105,6 +105,7 @@
   星球精选文章：
   - [逆向案例1 - 某16x8平台商品列表接口逆向参数分析](https://articles.zsxq.com/id_x1qmtg8pzld9.html)
   - [逆向案例2 - Product Hunt月度最佳产品榜单接口加密参数分析](https://articles.zsxq.com/id_au4eich3x2sg.html)
+  - [逆向案例3 - 某zhi乎x-zse-96参数分析过程](https://articles.zsxq.com/id_dui2vil0ag1l.html)
   - [【独创】使用Playwright获取某音a_bogus参数流程（包含加密参数分析）](https://articles.zsxq.com/id_u89al50jk9x0.html)
   - [【独创】使用Playwright低成本获取某书X-s参数流程分析（当年的回忆录）](https://articles.zsxq.com/id_u4lcrvqakuc7.html)
   - [ MediaCrawler-基于抽象类设计重构项目缓存](https://articles.zsxq.com/id_4ju73oxewt9j.html)
@@ -118,6 +119,17 @@
 
 成为赞助者，可以将您产品展示在这里，每天获得大量曝光，联系作者微信：yzglan
 
+## MediaCrawler爬虫项目交流群：
+<div id="join_wechat_group"> 
+
+> 备注github，会有拉群小助手自动拉你进群。  如果图片展示不出来或过期，可以直接添加我的微信号：yzglan，并备注github，会有拉群小助手自动拉你进
+
+<div style="max-width: 200px">  
+<p><img alt="直接添加我的微信号：yzglan" src="static/images/relakkes_weichat.JPG" style="width: 200px;height: 100%" ></p>
+</div>
+</div>
+
+
 ## 打赏
 
 如果觉得项目不错的话可以打赏哦。您的支持就是我最大的动力！
@@ -129,17 +141,6 @@
 </p>
 
 查看打赏列表 [点击跳转](#donate)
-
-
-## MediaCrawler爬虫项目交流群：
-<div id="join_wechat_group"> 
-
-> 如果图片展示不出来或者群链接过期，可以直接添加我的微信号：yzglan
-
-<div style="max-width: 200px">  
-<p><img alt="直接添加我的微信号：yzglan" src="static/images/13群二维码.JPG" style="width: 200px;height: 100%" ></p>
-</div>
-</div>
 
 
 ## 运行报错常见问题Q&A
@@ -186,6 +187,7 @@ PS：如果打赏时请备注捐赠者，如有遗漏请联系我添加（有时
 
 | 捐赠者         | 捐赠金额  | 捐赠日期       |
 |-------------|-------|------------|
+| Tornado     | 66 元  | 2024-08-20 |
 | srhedbj     | 50 元  | 2024-08-20 |
 | *嘉          | 20 元  | 2024-08-15 |
 | *良          | 50 元  | 2024-08-13 |
