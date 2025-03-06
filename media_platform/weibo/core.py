@@ -1,3 +1,14 @@
+# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：  
+# 1. 不得用于任何商业用途。  
+# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。  
+# 3. 不得进行大规模爬取或对平台造成运营干扰。  
+# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。   
+# 5. 不得用于任何非法或不当的用途。
+#   
+# 详细许可条款请参阅项目根目录下的LICENSE文件。  
+# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。  
+
+
 # -*- coding: utf-8 -*-
 # @Author  : relakkes@gmail.com
 # @Time    : 2023/12/23 15:41
@@ -195,7 +206,8 @@ class WeiboCrawler(AbstractCrawler):
                 await self.wb_client.get_note_all_comments(
                     note_id=note_id,
                     crawl_interval=random.randint(1,3), # 微博对API的限流比较严重，所以延时提高一些
-                    callback=weibo_store.batch_update_weibo_note_comments
+                    callback=weibo_store.batch_update_weibo_note_comments,
+                    max_count=config.CRAWLER_MAX_COMMENTS_COUNT_SINGLENOTES
                 )
             except DataFetchError as ex:
                 utils.logger.error(f"[WeiboCrawler.get_note_comments] get note_id: {note_id} comment error: {ex}")
@@ -249,8 +261,8 @@ class WeiboCrawler(AbstractCrawler):
                     callback=weibo_store.batch_update_weibo_notes
                 )
 
-                note_ids = [note_item.get("mlog", {}).get("id") for note_item in all_notes_list if
-                            note_item.get("mlog", {}).get("id")]
+                note_ids = [note_item.get("mblog", {}).get("id") for note_item in all_notes_list if
+                            note_item.get("mblog", {}).get("id")]
                 await self.batch_get_notes_comments(note_ids)
 
             else:

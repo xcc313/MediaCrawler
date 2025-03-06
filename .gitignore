@@ -171,3 +171,7 @@ cython_debug/
 
 docker/data/mysql8/data/
 docker/data/redis/data/
+
+/node_modules
+docs/.vitepress/cache
+

@@ -1,3 +1,14 @@
+# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：  
+# 1. 不得用于任何商业用途。  
+# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。  
+# 3. 不得进行大规模爬取或对平台造成运营干扰。  
+# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。   
+# 5. 不得用于任何非法或不当的用途。
+#   
+# 详细许可条款请参阅项目根目录下的LICENSE文件。  
+# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。  
+
+
 import asyncio
 import os
 import random
@@ -18,6 +29,7 @@ from var import crawler_type_var, source_keyword_var
 
 from .client import BaiduTieBaClient
 from .field import SearchNoteType, SearchSortType
+from .help import TieBaExtractor
 from .login import BaiduTieBaLogin
 
 
@@ -29,6 +41,7 @@ class TieBaCrawler(AbstractCrawler):
     def __init__(self) -> None:
         self.index_url = "https://tieba.baidu.com"
         self.user_agent = utils.get_user_agent()
+        self._page_extractor = TieBaExtractor()
 
     async def start(self) -> None:
         """
@@ -215,7 +228,8 @@ class TieBaCrawler(AbstractCrawler):
             await self.tieba_client.get_note_all_comments(
                 note_detail=note_detail,
                 crawl_interval=random.random(),
-                callback=tieba_store.batch_update_tieba_note_comments
+                callback=tieba_store.batch_update_tieba_note_comments,
+                max_count=config.CRAWLER_MAX_COMMENTS_COUNT_SINGLENOTES
             )
 
     async def get_creators_and_notes(self) -> None:
@@ -226,7 +240,8 @@ class TieBaCrawler(AbstractCrawler):
         """
         utils.logger.info("[WeiboCrawler.get_creators_and_notes] Begin get weibo creators")
         for creator_url in config.TIEBA_CREATOR_URL_LIST:
-            creator_info: TiebaCreator = await self.tieba_client.get_creator_info_by_url(creator_url=creator_url)
+            creator_page_html_content = await self.tieba_client.get_creator_info_by_url(creator_url=creator_url)
+            creator_info: TiebaCreator = self._page_extractor.extract_creator_info(creator_page_html_content)
             if creator_info:
                 utils.logger.info(f"[WeiboCrawler.get_creators_and_notes] creator info: {creator_info}")
                 if not creator_info:
@@ -239,7 +254,8 @@ class TieBaCrawler(AbstractCrawler):
                     user_name=creator_info.user_name,
                     crawl_interval=0,
                     callback=tieba_store.batch_update_tieba_notes,
-                    max_note_count=config.CRAWLER_MAX_NOTES_COUNT
+                    max_note_count=config.CRAWLER_MAX_NOTES_COUNT,
+                    creator_page_html_content=creator_page_html_content,
                 )
 
                 await self.batch_get_note_comments(all_notes_list)

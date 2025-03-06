@@ -1,3 +1,14 @@
+# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：  
+# 1. 不得用于任何商业用途。  
+# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。  
+# 3. 不得进行大规模爬取或对平台造成运营干扰。  
+# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。   
+# 5. 不得用于任何非法或不当的用途。
+#   
+# 详细许可条款请参阅项目根目录下的LICENSE文件。  
+# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。  
+
+
 # -*- coding: utf-8 -*-
 import html
 import json
@@ -225,6 +236,29 @@ class TieBaExtractor:
                             fans=fans,
                             registration_duration=self.extract_registration_duration(user_content)
                             )
+
+    @staticmethod
+    def extract_tieba_thread_id_list_from_creator_page(
+        html_content: str
+    ) -> List[str]:
+        """
+        提取贴吧创作者主页的帖子列表
+        Args:
+            html_content:
+
+        Returns:
+
+        """
+        selector = Selector(text=html_content)
+        thread_id_list = []
+        xpath_selector = (
+            "//ul[@class='new_list clearfix']//div[@class='thread_name']/a[1]/@href"
+        )
+        thread_url_list = selector.xpath(xpath_selector).getall()
+        for thread_url in thread_url_list:
+            thread_id = thread_url.split("?")[0].split("/")[-1]
+            thread_id_list.append(thread_id)
+        return thread_id_list
 
     def extract_ip_and_pub_time(self, html_content: str) -> Tuple[str, str]:
         """

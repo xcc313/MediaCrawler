@@ -1,3 +1,14 @@
+# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：  
+# 1. 不得用于任何商业用途。  
+# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。  
+# 3. 不得进行大规模爬取或对平台造成运营干扰。  
+# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。   
+# 5. 不得用于任何非法或不当的用途。
+#   
+# 详细许可条款请参阅项目根目录下的LICENSE文件。  
+# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。  
+
+
 # -*- coding: utf-8 -*-
 # @Author  : relakkes@gmail.com
 # @Time    : 2023/12/23 15:40
@@ -52,10 +63,13 @@ class WeiboClient:
 
         data: Dict = response.json()
         ok_code = data.get("ok")
-        if ok_code not in [0, 1]:
+        if ok_code == 0:  # response error
             utils.logger.error(f"[WeiboClient.request] request {method}:{url} err, res:{data}")
-            raise DataFetchError(data.get("msg", "unkonw error"))
-        else:
+            raise DataFetchError(data.get("msg", "response error"))
+        elif ok_code != 1:  # unknown error
+            utils.logger.error(f"[WeiboClient.request] request {method}:{url} err, res:{data}")
+            raise DataFetchError(data.get("msg", "unknown error"))
+        else:  # response right
             return data.get("data", {})
 
     async def get(self, uri: str, params=None, headers=None, **kwargs) -> Union[Response, Dict]:
@@ -116,45 +130,54 @@ class WeiboClient:
         }
         return await self.get(uri, params)
 
-    async def get_note_comments(self, mid_id: str, max_id: int) -> Dict:
+    async def get_note_comments(self, mid_id: str, max_id: int, max_id_type: int = 0) -> Dict:
         """get notes comments
         :param mid_id: 微博ID
         :param max_id: 分页参数ID
+        :param max_id_type: 分页参数ID类型
         :return:
         """
         uri = "/comments/hotflow"
         params = {
             "id": mid_id,
             "mid": mid_id,
-            "max_id_type": 0,
+            "max_id_type": max_id_type,
         }
         if max_id > 0:
             params.update({"max_id": max_id})
-
         referer_url = f"https://m.weibo.cn/detail/{mid_id}"
         headers = copy.copy(self.headers)
         headers["Referer"] = referer_url
 
         return await self.get(uri, params, headers=headers)
 
-    async def get_note_all_comments(self, note_id: str, crawl_interval: float = 1.0,
-                                    callback: Optional[Callable] = None, ):
+    async def get_note_all_comments(
+        self,
+        note_id: str,
+        crawl_interval: float = 1.0,
+        callback: Optional[Callable] = None,
+        max_count: int = 10,
+    ):
         """
         get note all comments include sub comments
         :param note_id:
         :param crawl_interval:
         :param callback:
+        :param max_count:
         :return:
         """
-
         result = []
         is_end = False
         max_id = -1
-        while not is_end:
-            comments_res = await self.get_note_comments(note_id, max_id)
+        max_id_type = 0
+        while not is_end and len(result) < max_count:
+            comments_res = await self.get_note_comments(note_id, max_id, max_id_type)
             max_id: int = comments_res.get("max_id")
+            max_id_type: int = comments_res.get("max_id_type")
             comment_list: List[Dict] = comments_res.get("data", [])
             is_end = max_id == 0
+            if len(result) + len(comment_list) > max_count:
+                comment_list = comment_list[:max_count - len(result)]
             if callback:  # 如果有回调函数，就执行回调函数
                 await callback(note_id, comment_list)
             await asyncio.sleep(crawl_interval)
@@ -337,10 +360,7 @@ class WeiboClient:
                 utils.logger.error(
                     f"[WeiboClient.get_notes_by_creator] The current creator may have been banned by xhs, so they cannot access the data.")
                 break
-
-            notes_has_more = notes_res.get("cardlistInfo", {}).get("total", 0) > crawler_total_count
             since_id = notes_res.get("cardlistInfo", {}).get("since_id", "0")
-            notes_has_more += 10
             if "cards" not in notes_res:
                 utils.logger.info(
                     f"[WeiboClient.get_all_notes_by_creator] No 'notes' key found in response: {notes_res}")
@@ -354,5 +374,7 @@ class WeiboClient:
                 await callback(notes)
             await asyncio.sleep(crawl_interval)
             result.extend(notes)
+            crawler_total_count += 10
+            notes_has_more = notes_res.get("cardlistInfo", {}).get("total", 0) > crawler_total_count
         return result
 
