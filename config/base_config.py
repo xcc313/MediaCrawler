@@ -67,16 +67,11 @@ MAX_CONCURRENCY_NUM = 1
 # 是否开启爬图片模式, 默认不开启爬图片
 ENABLE_GET_IMAGES = True
 
-<<<<<<< HEAD
-# 是否开启爬评论模式, 默认不开启爬评论
-ENABLE_GET_COMMENTS = True
-=======
 # 是否开启爬评论模式, 默认开启爬评论
 ENABLE_GET_COMMENTS = True
 
 # 爬取一级评论的数量控制(单视频/帖子)
 CRAWLER_MAX_COMMENTS_COUNT_SINGLENOTES = 10
->>>>>>> f2cf864c27be5a9cd725f986bb2afeba171bcc35
 
 # 是否开启爬二级评论模式, 默认不开启爬二级评论
 # 老版本项目使用了 db, 则需参考 schema/tables.sql line 287 增加表字段
